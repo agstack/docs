@@ -1,0 +1,57 @@
+name: deploy
+
+# Publishes the built site to the `gh-pages` branch of this same repository.
+# GitHub Pages is configured as Settings -> Pages -> Source: "Deploy from a
+# branch", branch `gh-pages`, folder `/ (root)`.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Only contents: the branch-based deploy is an ordinary git push, so it needs no
+# pages/id-token permissions.
+permissions:
+  contents: write
+
+# Never let two deploys race for the branch. Queued rather than cancelled, so a
+# push that lands during a build still gets published.
+concurrency:
+  group: deploy-gh-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Without the submodules the build fails loudly, by design, rather than
+          # publishing empty sections.
+          submodules: recursive
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      # `check`, not `build`: main is gated on the same unresolved-cross-link
+      # check pull requests are, and it produces the identical public/ tree.
+      - run: ./site check
+
+      # public/ is a build artifact, so gh-pages carries a single orphan commit
+      # that is replaced on every deploy rather than an ever-growing history of
+      # generated HTML. `static/.nojekyll` is copied into public/ by Hugo and
+      # stops Pages from running the output through Jekyll.
+      - name: Push public/ to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: public
+        run: |
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deploy ${GITHUB_SHA} from ${GITHUB_REF_NAME}"
+          git push -q --force \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            gh-pages

@@ -1,0 +1,33 @@
+name: ci
+
+# Build every pull request exactly the way the deploy does, so a change that
+# breaks an imported cross-link is caught before it reaches main.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Without the submodules the build fails loudly, by design, rather than
+          # publishing empty sections — so there is no point running without them.
+          submodules: recursive
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      # Hugo is not installed here: `npm ci` pulls the hugo-extended version
+      # pinned in package.json, the same binary the container and a local
+      # checkout use.
+      - run: ./site check

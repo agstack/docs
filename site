@@ -1,0 +1,102 @@
+#!/bin/sh
+# Task runner for the docs site. POSIX sh on purpose: no make, no extra tooling.
+#
+#   ./site serve     ./site build     ./site check
+#   ./site init      ./site update    ./site clean
+#
+# Everything Hugo-facing goes through the npm scripts in package.json, so flags
+# live in exactly one place and `docker compose` (which calls those scripts
+# directly) cannot drift from what a contributor runs on the host.
+set -eu
+
+cd "$(dirname "$0")"
+
+usage() {
+  cat <<'EOF'
+Usage: ./site <command> [args...]
+
+  init     Fetch submodules and install the toolchain (implied by the commands below)
+  serve    Live-reloading server on http://localhost:1313/
+  build    Production build into public/
+  check    Production build that fails on unresolved imported cross-links
+  update   Bump imported-docs submodules to the tip of their tracked branch
+  clean    Remove build output
+  help     This message
+
+Extra arguments are passed through to Hugo, e.g. `./site serve --navigateToChanged`.
+EOF
+}
+
+# Idempotent and cheap on a warm checkout, so the build commands can all depend on
+# it without paying for a reinstall every time.
+init() {
+  git submodule update --init --recursive
+
+  # Test that Hugo actually *runs* rather than merely existing: node_modules may
+  # have been installed for another platform (a shared checkout, a bind mount from
+  # a different host), in which case the pinned hugo-extended binary is unusable.
+  if ! ./node_modules/.bin/hugo version >/dev/null 2>&1; then
+    npm ci
+  fi
+
+  if [ -z "$(ls -A themes/docsy/theme/node_modules 2>/dev/null)" ]; then
+    npm run install:theme-deps --prefix themes/docsy
+  fi
+}
+
+# `build` with --printPathWarnings, gated on the warnings that mean an imported
+# page points at something the content adapter did not produce. Hugo exits 0 on
+# those, which is why the output has to be inspected rather than trusted.
+check() {
+  if ! out=$(npm run --silent check -- "$@" 2>&1); then
+    printf '%s\n' "$out" >&2
+    exit 1
+  fi
+  printf '%s\n' "$out"
+
+  if printf '%s\n' "$out" | grep -qiE '^WARN.*(render-link|content adapter)'; then
+    echo >&2
+    echo "broken imported links or adapter warnings above" >&2
+    exit 1
+  fi
+}
+
+cmd=${1:-help}
+[ $# -gt 0 ] && shift
+
+case "$cmd" in
+  init)
+    init
+    ;;
+  serve)
+    init
+    npm run --silent serve -- "$@"
+    ;;
+  build)
+    init
+    npm run --silent build -- "$@"
+    ;;
+  check)
+    init
+    check "$@"
+    ;;
+  update)
+    # Scoped to external/ on purpose. themes/docsy is pinned to a release tag, and
+    # an unscoped --remote would drag it to the tip of main instead.
+    git submodule update --remote --merge -- external
+    echo
+    echo "Submodule pointers moved. Review with: git diff --submodule=log"
+    ;;
+  clean)
+    rm -rf public resources .hugo_build.lock
+    ;;
+  help|-h|--help)
+    usage
+    ;;
+  *)
+    echo "unknown command: $cmd" >&2
+    echo >&2
+    usage >&2
+    exit 2
+    ;;
+esac

@@ -1,4 +1,8 @@
-baseURL = "https://agstack.github.io/docs/"
+# The site is served from the custom domain in static/CNAME, at the root — not
+# under a /docs/ path. Getting this wrong is not cosmetic: Hugo bakes the path
+# into every generated link, so a stale project-site baseURL makes the stylesheet,
+# the favicons and every nav link 404 on the real domain.
+baseURL = "https://docs.agstack.org/"
 title = "AgStack Documentation"
 
 # Docsy v0.17 moved the theme into a subdirectory of its repository.

@@ -24,12 +24,10 @@ the submodules the build fails loudly rather than publishing empty sections.
 Requirements: Node ≥ 24 and npm ≥ 11.18. Hugo itself is pinned in `package.json`
 (`hugo-extended`) and installed by `npm ci`, so there is nothing to install globally.
 
-> The deployed site is a GitHub Pages *project* site, so its `baseURL` carries the
-> `/docs/` path — and a Hugo server serves from whatever path `baseURL`
-> has. `config/development/hugo.toml` overrides it back to the root for local use,
-> which is why the local site is at `http://localhost:1313/` while the published
-> one is under `/docs/`. `hugo server` picks up that override
-> automatically; `hugo` (and CI) build with the production value.
+> The deployed site lives at **<https://docs.agstack.org/>**, served from the
+> `gh-pages` branch. `config/development/hugo.toml` overrides `baseURL` to
+> `http://localhost:1313/` so local links resolve against the dev server; `hugo`
+> — and so `./site build`, `./site check` and CI — uses the production value.
 
 | Command | What it does |
 |---|---|
@@ -140,11 +138,11 @@ adapter, write a section index.
 ```
 config/
 ├── _default/hugo.toml                      config; [module] mounts wire in submodules
-└── development/hugo.toml                   local-only: serve from / instead of /docs/
+└── development/hugo.toml                   local-only: serve from localhost, not the live domain
 assets/
 ├── icons/logo.svg                          navbar mark, monochrome (currentColor)
 └── scss/_variables_project.scss            brand palette, taken from the logo
-static/                                     full lockup, colour mark, favicons
+static/                                     lockup, favicons, .nojekyll, CNAME
 content/                                    sections live at the root: the site IS the docs
 ├── _index.md                               landing page + documentation index
 ├── contributing/multi-repo.md              how the pipeline works
@@ -197,21 +195,22 @@ One-time setup on the repository:
 2. Nothing else. The deploy authenticates with the built-in `GITHUB_TOKEN` and the
    workflow requests `contents: write` for it — no deploy key or PAT.
 
-`baseURL` in `config/_default/hugo.toml` is set to `https://agstack.github.io/docs/`,
-where a GitHub Pages *project* site for `agstack/docs` publishes. `static/.nojekyll`
-is copied into the output so Pages serves the built HTML as-is instead of running it
-through Jekyll.
+### The custom domain
 
-To serve from a custom domain such as `docs.agstack.org`, change `baseURL`, add the
-domain in Settings → Pages, create the DNS record — and **also add a `static/CNAME`
-file** containing the bare domain. Setting the domain in Settings commits a `CNAME`
-to `gh-pages`, and because each deploy replaces that branch wholesale the next one
-would delete it and silently drop the custom domain; putting it in `static/` means
-Hugo emits it on every build. Note that `agstack.org`
-itself is not GitHub Pages — it is WordPress on Pantheon — so only a subdomain is in
-play. Set the custom domain on **this repository**, not on an `agstack.github.io`
-org-site repo: a domain set there is inherited by every project site in the
-organisation.
+The site is served from **`docs.agstack.org`**, at the root. Two files make that
+work, and both matter:
+
+- **`static/CNAME`** holds the bare domain. Setting the domain in Settings → Pages
+  commits a `CNAME` to `gh-pages`, but each deploy replaces that branch wholesale,
+  so the next one would delete it and silently drop the domain back to
+  `agstack.github.io`. Keeping it in `static/` means Hugo re-emits it every build.
+- **`baseURL`** in `config/_default/hugo.toml` must match — `https://docs.agstack.org/`,
+  with no path. Hugo bakes it into every generated link, so a leftover project-site
+  value like `https://agstack.github.io/docs/` makes the stylesheet, the favicons
+  and every nav link 404 on the real domain while the page itself still returns 200.
+
+`static/.nojekyll` is copied into the output so Pages serves the built HTML as-is
+instead of running it through Jekyll.
 
 ## License
 

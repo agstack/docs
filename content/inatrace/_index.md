@@ -63,7 +63,7 @@ and sends mail over SMTP.
 | Repository | Stack | Documentation |
 |---|---|---|
 | [inatrace-frontend](https://github.com/agstack/inatrace-frontend) | Angular, TypeScript | [Web frontend](frontend/) — imported from its `docs/` |
-| [inatrace-backend](https://github.com/agstack/inatrace-backend) | Java, Spring Boot | `docs/` merged upstream; import pending |
+| [inatrace-backend](https://github.com/agstack/inatrace-backend) | Java, Spring Boot | [Backend](backend/) — imported from its `docs/` |
 
 ## License
 

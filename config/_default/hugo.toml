@@ -99,6 +99,18 @@ disablePathToLower = false
     source = "external/inatrace-frontend/docs/images"
     target = "static/inatrace/frontend/images"
 
+  [[module.mounts]]
+    source = "external/inatrace-backend/docs"
+    target = "assets/imported/inatrace-backend"
+
+  # Two of the three SVGs here are referenced only by the backend's root-level
+  # TECHNICAL_DOCUMENTATION.md, which is deliberately not imported because it is
+  # out of date. They are mounted anyway: separating them would mean reaching
+  # into the submodule, and an unused image costs nothing but bytes.
+  [[module.mounts]]
+    source = "external/inatrace-backend/docs/images"
+    target = "static/inatrace/backend/images"
+
 [params]
   copyright = "The AgStack Foundation"
   github_repo = "https://github.com/agstack/docs"

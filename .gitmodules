@@ -9,3 +9,7 @@
 	path = external/inatrace-frontend
 	url = https://github.com/agstack/inatrace-frontend.git
 	branch = main
+[submodule "external/inatrace-backend"]
+	path = external/inatrace-backend
+	url = https://github.com/agstack/inatrace-backend.git
+	branch = main

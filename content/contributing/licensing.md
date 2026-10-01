@@ -45,6 +45,7 @@ drafted for.
 |---|---|---|
 | [PANCAKE](../../pancake/) | [`agstack/pancake`](https://github.com/agstack/pancake) | [EUPL-1.2](https://github.com/agstack/pancake/blob/main/LICENSE) |
 | [INATrace web frontend](../../inatrace/frontend/) | [`agstack/inatrace-frontend`](https://github.com/agstack/inatrace-frontend) | [MPL-2.0](https://github.com/agstack/inatrace-frontend/blob/main/LICENSE) |
+| [INATrace backend](../../inatrace/backend/) | [`agstack/inatrace-backend`](https://github.com/agstack/inatrace-backend) | [MPL-2.0](https://github.com/agstack/inatrace-backend/blob/main/LICENSE) |
 
 Neither EUPL-1.2 nor MPL-2.0 is CC BY-SA 4.0, and each carries its own
 obligations. If you reuse material from an imported section, check that

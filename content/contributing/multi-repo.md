@@ -107,6 +107,33 @@ mounts reach the same place through a supported path.
    ./site check
    ```
 
+## Images
+
+A repository that illustrates its docs keeps the files in `docs/images/` and
+references them page-relative — `![](images/x.png)` — which is correct on GitHub
+and wrong here, where it would resolve against the page's own URL.
+
+Three things make it work, and all three have to agree:
+
+1. A second mount, putting the directory somewhere servable:
+
+   ```toml
+   [[module.mounts]]
+     source = "external/<repo>/docs/images"
+     target = "static/<section path>/images"
+   ```
+
+2. `$imageBase` in that section's adapter, naming the URL the mount produces —
+   `/<section path>/images/`. It is attached to every page as
+   `imported_image_base`.
+
+3. `layouts/_markup/render-image.html`, which rewrites `images/x` to that base.
+   It is already there and needs no changes; it leaves locally-authored pages
+   alone, because they carry no `imported_image_base`.
+
+Get the mount target and `$imageBase` out of step and the build still succeeds —
+the images simply 404. Worth opening one imported page after adding a section.
+
 ## Keeping imports fresh
 
 A submodule pins a commit, so imported docs would otherwise stay frozen at whatever
@@ -128,10 +155,10 @@ Worth knowing before adding the sixth repository:
 - **Cross-link rewriting is heuristic.** `render-link.html` maps `FOO.md` to the slug
   the adapter would have produced. Links into subdirectories of a component's `docs/`
   tree are not handled — the adapter globs one level (`*.md`).
-- **Images need their own mount.** The adapter handles Markdown only; a component repo
-  with `docs/images/` needs a second mount into `static/`, and its relative image
-  paths then no longer match. `pancake` has no images, so this scaffold does not
-  demonstrate a fix.
+- **Images need their own mount.** The adapter turns Markdown into pages; an `<img>`
+  needs a real file at a real URL, which only a `static/` mount provides. See
+  [Images](#images) below — it is two lines of config and one adapter variable, but
+  forgetting it gives broken images rather than an error.
 - **Cloning without submodules fails quietly.** `git clone` alone yields an empty
   `external/`. The adapters call `errorf` on an empty mount to turn that into a build
   failure rather than a site with missing sections. `./site init` is the real fix

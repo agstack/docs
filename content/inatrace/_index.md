@@ -9,7 +9,6 @@ description: >
 INATrace is a digital open-source solution designed to enhance the economic conditions of smallholder farmers by improving the traceability of global supply chains. Funded by the German Federal Ministry for Economic Cooperation and Development (BMZ) and implemented by GIZ, INATrace provides an efficient internal management system for cooperatives, digitally stores supply chain data, and supports compliance with regulations like the EU Deforestation Regulation (EUDR). It provides:
 
 - 🔗 **Full supply chain transparency** — trace every step from smallholder farm to final buyer
-- ⛓️ **Blockchain-backed trust** — immutable records on Hyperledger Fabric
 - 🏢 **Multi-tenant, multi-value-chain** — one system for multiple organizations and commodity types
 - 📱 **Mobile-first field data** — GPS polygon mapping, offline-capable farmer registration
 - 📊 **Quality & compliance** — assure quality standards and support EU Deforestation Regulation (EUDR) compliance
@@ -45,26 +44,27 @@ INATrace is a digital open-source solution designed to enhance the economic cond
         +-----------+      +-----------+      +------------+
 ```
 
-Two clients talk to one Spring Boot API over HTTPS, authenticating with a JWT the
-backend returns as an `inatrace-accessToken` cookie; every endpoint it defines sits
-under `/api`. The Angular client is where cooperatives configure value chains,
-companies, facilities and payments. The mobile app is built for the field — it keeps
-its own Realm database so farmer registration and GPS polygon mapping work with no
-connectivity, and syncs once a connection returns. MySQL holds the traceability
-graph — farmers and their plots, deliveries, processing actions, stock and customer
-orders, linked closely enough that a finished product can be traced back to the farms
-it came from. Outbound, the backend pushes orders to Beyco, syncs daily exchange
-rates for the currencies a tenant has enabled, and sends mail over SMTP.
+Web Client and mobile app talk to one Spring Boot API over HTTPS.
+The Web Client is where cooperatives and associations configure value chains,
+companies, facilities and payments.
+
+The mobile app is built for the field — it keeps its own Realm database so
+farmer registration and GPS polygon mapping work with no connectivity, and
+syncs once a connection returns.
+ 
+The system holds the traceability graph — farmers and their plots, deliveries,
+processing actions, stock and customer orders, linked closely enough that a finished
+product can be traced back to the farms it came from. Outbound, the backend pushes
+orders to Beyco, syncs daily exchange rates for the currencies a tenant has enabled,
+and sends mail over SMTP.
 
 ## Component repositories
 
-| Repository | Stack | Current documentation |
+| Repository | Stack | Documentation |
 |---|---|---|
-| [inatrace-backend](https://github.com/agstack/inatrace-backend) | Java, Spring Boot | `README.md` (~470 lines: config properties, auth, database, Docker), `TECHNICAL_DOCUMENTATION.md` |
-| [inatrace-frontend](https://github.com/agstack/inatrace-frontend) | Angular, TypeScript | `README.md` (~310 lines: feature walkthrough) |
+| [inatrace-frontend](https://github.com/agstack/inatrace-frontend) | Angular, TypeScript | [Web frontend](frontend/) — imported from its `docs/` |
+| [inatrace-backend](https://github.com/agstack/inatrace-backend) | Java, Spring Boot | `docs/` merged upstream; import pending |
 
-
-
-## 📜 License
+## License
 
 All INATrace repositories are licensed under the **Mozilla Public License 2.0** (MPL-2.0).

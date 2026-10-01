@@ -44,10 +44,11 @@ drafted for.
 | Section | Source repository | Licence |
 |---|---|---|
 | [PANCAKE](../../pancake/) | [`agstack/pancake`](https://github.com/agstack/pancake) | [EUPL-1.2](https://github.com/agstack/pancake/blob/main/LICENSE) |
+| [INATrace web frontend](../../inatrace/frontend/) | [`agstack/inatrace-frontend`](https://github.com/agstack/inatrace-frontend) | [MPL-2.0](https://github.com/agstack/inatrace-frontend/blob/main/LICENSE) |
 
-Note that EUPL-1.2 is **not** CC BY-SA 4.0 and carries different obligations. If
-you reuse material from an imported section, check that section's licence rather
-than the site footer.
+Neither EUPL-1.2 nor MPL-2.0 is CC BY-SA 4.0, and each carries its own
+obligations. If you reuse material from an imported section, check that
+section's licence rather than the site footer.
 
 ## Contributing
 

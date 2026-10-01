@@ -1,0 +1,33 @@
+{{- /*
+  Image render hook: resolve page-relative image paths on imported pages.
+
+  Documentation imported from a component repository is written to be read on
+  GitHub, so it references its screenshots relative to the page — `images/x.png`,
+  sitting next to the Markdown in that repository's `docs/`. Rendered here, that
+  resolves against the *page's* URL (…/products/images/x.png) and 404s.
+
+  The directory is mounted into `static/` instead (see the module mounts in
+  config/_default/hugo.toml), and each section's content adapter records where,
+  as `imported_image_base`. This rewrites the former into the latter.
+
+  Locally-authored pages set no such param and are left exactly alone, as are
+  absolute URLs and anything already rooted.
+*/ -}}
+
+{{- $src := .Destination -}}
+{{- $u := urls.Parse $src -}}
+
+{{- if and (not $u.IsAbs) (not (hasPrefix $src "/")) -}}
+  {{- with .Page.Params.imported_image_base -}}
+    {{- $src = printf "%s%s" . (strings.TrimPrefix "images/" $src) | relURL -}}
+  {{- end -}}
+{{- end -}}
+
+<img
+  src="{{ $src }}"
+  alt="{{ .Text }}"
+  {{- with .Title }} title="{{ . }}"{{ end }}
+  loading="lazy"
+  class="img-fluid"
+/>
+{{- /**/ -}}

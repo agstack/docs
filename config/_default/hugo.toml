@@ -77,6 +77,28 @@ disablePathToLower = false
     source = "external/pancake/docs"
     target = "assets/imported/pancake"
 
+  [[module.mounts]]
+    source = "external/inatrace-frontend/docs"
+    target = "assets/imported/inatrace-frontend"
+
+  # Re-declared default, for the same reason as content/ and assets/ above: the
+  # image mount below is a `static` mount, and declaring one removes Hugo's
+  # default. Without this line static/ is not in the build — which costs the
+  # favicons, the logo, .nojekyll, and CNAME, so the next deploy silently drops
+  # the custom domain. The build does not complain.
+  [[module.mounts]]
+    source = "static"
+    target = "static"
+
+  # Images are the one thing the adapter cannot carry: it turns Markdown into
+  # pages, and an <img> needs a real file at a real URL. They mount into static/
+  # instead, and layouts/_markup/render-image.html rewrites the page-relative
+  # `images/x` that works on GitHub into the URL they land on here. The adapter
+  # names that URL per section, so this stays a two-line change per repository.
+  [[module.mounts]]
+    source = "external/inatrace-frontend/docs/images"
+    target = "static/inatrace/frontend/images"
+
 [params]
   copyright = "The AgStack Foundation"
   github_repo = "https://github.com/agstack/docs"

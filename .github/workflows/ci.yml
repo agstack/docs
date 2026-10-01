@@ -16,7 +16,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           # Without the submodules the build fails loudly, by design, rather than
           # publishing empty sections — so there is no point running without them.

@@ -22,7 +22,7 @@ jobs:
           # publishing empty sections — so there is no point running without them.
           submodules: recursive
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm

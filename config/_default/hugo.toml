@@ -143,6 +143,11 @@ disablePathToLower = false
     url = "https://github.com/agstack"
     icon = "fab fa-github"
     desc = "All AgStack repositories"
+  [[params.links.user]]
+    name = "Discord"
+    url = "https://discord.gg/k8mAJHxKYj"
+    icon = "fab fa-discord"
+    desc = "Chat with the AgStack community"
 
 [[menu.main]]
   name = "agstack.org"
@@ -155,3 +160,9 @@ disablePathToLower = false
   weight = 50
   url = "https://github.com/agstack"
   pre = "<i class='fab fa-github'></i>"
+
+[[menu.main]]
+  name = "Discord"
+  weight = 60
+  url = "https://discord.gg/k8mAJHxKYj"
+  pre = "<i class='fab fa-discord'></i>"
